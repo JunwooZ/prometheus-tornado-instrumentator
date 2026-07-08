@@ -1,0 +1,59 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "prometheus-tornado-instrumentator"
+version = "0.1.0"
+description = "Instrument Tornado applications with Prometheus metrics."
+readme = "README.md"
+requires-python = ">=3.9"
+license = "ISC"
+license-files = ["LICENSE"]
+authors = [
+    { name = "JunwooZ" },
+]
+keywords = ["prometheus", "instrumentation", "tornado", "metrics"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Framework :: Tornado",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Typing :: Typed",
+]
+dependencies = [
+    "prometheus-client>=0.8,<1.0",
+    "tornado>=6.0,<7.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/JunwooZ/prometheus-tornado-instrumentator"
+Repository = "https://github.com/JunwooZ/prometheus-tornado-instrumentator"
+Issues = "https://github.com/JunwooZ/prometheus-tornado-instrumentator/issues"
+
+[project.optional-dependencies]
+dev = [
+    "build>=1.2",
+    "pytest>=8.0",
+    "pytest-cov>=5.0",
+    "twine>=5.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+prometheus_tornado_instrumentator = ["py.typed"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+cache_dir = ".pytest_cache"
+pythonpath = ["src"]
+markers = [
+    "slow: marks tests as slow",
+]

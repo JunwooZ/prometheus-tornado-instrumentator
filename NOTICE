@@ -1,0 +1,16 @@
+Prometheus Tornado Instrumentator
+
+This project is a Tornado-focused Prometheus instrumentator inspired by
+trallnag/prometheus-fastapi-instrumentator, which is licensed under the ISC
+License.
+
+The initial semantic-parity baseline was audited against:
+
+- Repository: https://github.com/trallnag/prometheus-fastapi-instrumentator
+- Baseline tag: v8.0.2
+- Baseline tag SHA: 7c8519756bc492828f40e8530320894995a08200
+- Master SHA inspected during the initial audit: c1c1fb645ce3b28d538413a9ac18cc7559c0c385
+- Audit date: 2026-07-08
+
+This project is a Tornado semantic port, not a fork of the FastAPI package.
+
