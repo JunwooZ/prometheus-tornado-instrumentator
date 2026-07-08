@@ -16,7 +16,6 @@ authors = [
 keywords = ["prometheus", "instrumentation", "tornado", "metrics"]
 classifiers = [
     "Development Status :: 3 - Alpha",
-    "Framework :: Tornado",
     "Intended Audience :: Developers",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.9",
