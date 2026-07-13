@@ -150,6 +150,22 @@ The `release.yml` workflow should:
 5. Publish to PyPI through Trusted Publishing.
 6. Create a GitHub Release whose body is the matching Changelog section.
 
+The GitHub Release includes the built wheel and source distribution as assets;
+GitHub also provides source-code archives for the tag. The Release body contains
+only the curated Changelog section for that version.
+
+## Post-Release Checks
+
+After the production workflow completes:
+
+1. Confirm every `release.yml` job succeeded.
+2. Confirm PyPI lists the expected final version.
+3. Confirm the GitHub Release body matches the version's Changelog section and
+   includes both the wheel and source distribution.
+4. Install the exact version in a clean environment and verify a basic import.
+5. Delete merged release branches locally and remotely. Keep `main`, release
+   tags, and explicitly named backup branches.
+
 ## Release Smoke Test
 
 When changing the GitHub Release automation, run **Release Smoke Test** manually
