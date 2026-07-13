@@ -9,8 +9,9 @@ It is intended for maintainers and agents that need to refresh parity later.
 - Upstream URL: https://github.com/trallnag/prometheus-fastapi-instrumentator
 - Upstream license: ISC
 - Baseline tag: `v8.0.2`
-- Baseline tag SHA: `7c8519756bc492828f40e8530320894995a08200`
-- Master SHA inspected during the initial audit: `c1c1fb645ce3b28d538413a9ac18cc7559c0c385`
+- Baseline annotated tag object: `7c8519756bc492828f40e8530320894995a08200`
+- Baseline tag peeled commit: `c1c1fb645ce3b28d538413a9ac18cc7559c0c385`
+- Master SHA inspected during the initial audit: `c1c1fb645ce3b28d538413a9ac18cc7559c0c385` (same commit)
 - Audit date: 2026-07-08
 
 ## Local Verification
@@ -32,4 +33,3 @@ When updating the upstream baseline:
 4. Mark only framework-specific behavior as not applicable.
 5. Update `docs/parity.md` when user-visible scope changes.
 6. Run the full local test suite.
-

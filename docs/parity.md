@@ -19,7 +19,7 @@ Supported:
 
 - `Instrumentator().instrument(app).expose(app)` for Tornado applications.
 - Default request count, request size, response size, and latency metrics.
-- Custom sync and async instrumentation functions.
+- Custom sync instrumentation functions and eventually executed async functions.
 - Custom Prometheus registries.
 - Gzip metrics output.
 - Regex handler exclusions.
@@ -40,4 +40,3 @@ Not supported:
 The initial upstream baseline is recorded in
 [docs/internals/porting/upstream-baseline.md](internals/porting/upstream-baseline.md).
 Detailed migration evidence is kept under `docs/internals/porting/`.
-

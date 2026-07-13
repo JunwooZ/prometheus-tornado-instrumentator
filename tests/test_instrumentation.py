@@ -85,6 +85,12 @@ class IgnoreHandler(RequestHandler):
         self.write("ignore")
 
 
+class PreciseDurationHandler(RequestHandler):
+    def get(self):
+        self.request.request_time = lambda: 1.23456
+        self.write("precise")
+
+
 class BodyHandler(RequestHandler):
     def get(self):
         self.write("123456789")
@@ -449,6 +455,23 @@ class RoundedLatencyTest(AsyncHTTPTestCase):
         duration, duration_without_streaming = self.observed[0]
         assert duration == round(duration, 3)
         assert duration_without_streaming == round(duration_without_streaming, 3)
+
+
+class DefaultLatencyPrecisionTest(AsyncHTTPTestCase):
+    def get_app(self):
+        self.observed_durations = []
+
+        def observe(info):
+            self.observed_durations.append(info.modified_duration)
+
+        app = Application([(r"/precise", PreciseDurationHandler)])
+        Instrumentator().add(observe).instrument(app)
+        return app
+
+    def test_default_observation_keeps_unrounded_duration(self):
+        assert self.fetch("/precise").code == 200
+
+        assert self.observed_durations == [1.23456]
 
 
 class EnvVarDisabledInstrumentationTest(AsyncHTTPTestCase):
@@ -964,7 +987,12 @@ class StreamingBodyCaptureTest(AsyncHTTPTestCase):
 class ResponseSizeInstrumentationTest(AsyncHTTPTestCase):
     def get_app(self):
         self.registry = CollectorRegistry()
-        app = Application([(r"/body", BodyHandler)])
+        app = Application(
+            [
+                (r"/body", BodyHandler),
+                (r"/stream", StreamingBodyHandler),
+            ]
+        )
         Instrumentator(registry=self.registry).add(
             metrics.response_size(registry=self.registry)
         ).instrument(app)
@@ -981,6 +1009,20 @@ class ResponseSizeInstrumentationTest(AsyncHTTPTestCase):
                 {"handler": "/body", "method": "GET", "status": "2xx"},
             )
             == 9
+        )
+
+    def test_response_size_observes_chunked_response_bytes(self):
+        response = self.fetch("/stream")
+
+        assert response.code == 200
+        assert response.headers.get("Content-Length") is None
+        assert response.body == b"0xxx1xxx2xxx3xxx4xxx"
+        assert (
+            self.registry.get_sample_value(
+                "http_response_size_bytes_sum",
+                {"handler": "/stream", "method": "GET", "status": "2xx"},
+            )
+            == 20
         )
 
 

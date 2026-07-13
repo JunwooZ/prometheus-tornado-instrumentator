@@ -9,20 +9,22 @@ permissions:
   contents: read
 
 jobs:
-  build:
-    name: Build distributions
+  preflight:
+    name: Verify TestPyPI tag
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check out repository
+      - name: Check out release tag and main
         uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
       - name: Set up uv and Python
         uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
         with:
           python-version: "3.13"
 
-      - name: Verify tag matches project version
+      - name: Verify tag matches project version and main
         env:
           RELEASE_TAG: ${{ github.ref_name }}
         run: |
@@ -32,22 +34,21 @@ jobs:
             echo "Tag version $tag_version does not match project version $project_version"
             exit 1
           }
+          git fetch origin main
+          git merge-base --is-ancestor "$GITHUB_SHA" FETCH_HEAD || {
+            echo "TestPyPI tag must point to a commit already merged into main"
+            exit 1
+          }
 
-      - name: Run tests
-        run: uv run --extra dev python -m pytest -q
-
-      - name: Build distributions
-        run: uv build
-
-      - name: Check distributions
-        run: uv run --extra dev python -m twine check dist/*
-
-      - name: Upload distributions
-        uses: actions/upload-artifact@v4
-        with:
-          name: release-dists
-          path: dist/
-          if-no-files-found: error
+  build:
+    name: Build distributions
+    needs: preflight
+    uses: ./.github/workflows/verify.yml
+    with:
+      python-version: "3.13"
+      build-package: true
+      upload-artifact: true
+      artifact-name: release-dists
 
   publish:
     name: Publish distributions to TestPyPI

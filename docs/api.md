@@ -24,6 +24,9 @@ Important constructor options:
 - `body_handlers`: regex patterns whose response bodies should be captured.
 - `registry`: custom Prometheus `CollectorRegistry`.
 
+Tornado's ordinary unmatched 404s do not enter a registered wrapped handler.
+They are therefore never observed, regardless of the untemplated options.
+
 ## `instrument(app)`
 
 ```python
@@ -67,7 +70,9 @@ instrumentator.add(custom_metric).instrument(app).expose(app)
 ```
 
 Adds one or more sync or async instrumentation functions. Each function receives
-one `Info` object.
+one `Info` object. Sync functions run during request completion; async functions
+are scheduled after completion and must not be used when a scrape must include
+their result immediately.
 
 ## `Info`
 
@@ -76,7 +81,8 @@ one `Info` object.
 Fields:
 
 - `request`: Tornado request object.
-- `response`: response data with `headers` and optional captured `body`.
+- `response`: response data with `headers`, optional captured `body`, and the
+  actual written `body_size` when no `Content-Length` header is available.
 - `method`: HTTP method.
 - `modified_handler`: normalized low-cardinality handler label.
 - `modified_status`: status label, optionally grouped.
@@ -105,4 +111,3 @@ Common options include:
 - `should_include_status`
 - `registry`
 - `custom_labels`
-

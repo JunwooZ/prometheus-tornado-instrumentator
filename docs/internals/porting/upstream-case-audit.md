@@ -1,6 +1,8 @@
 # Upstream Case Audit
 
-Source audited from `trallnag/prometheus-fastapi-instrumentator` `master` on 2026-07-08.
+Source audited from `trallnag/prometheus-fastapi-instrumentator` `v8.0.2` (peeled
+commit `c1c1fb645ce3b28d538413a9ac18cc7559c0c385`, also the audited `master`) on
+2026-07-08.
 
 Status meanings:
 
@@ -41,7 +43,7 @@ Total upstream cases: 98.
 | `test_metrics_endpoint_availability` | ported | `tests/test_expose.py::MetricsExposeTest::test_expose_default_metrics_endpoint` |
 | `test_gzip_accepted` | ported | `tests/test_expose.py::MetricsGzipTest::test_expose_gzips_when_enabled_and_accepted` |
 | `test_gzip_not_accepted` | ported | `tests/test_expose.py::MetricsNoGzipTest::test_expose_does_not_gzip_when_disabled` |
-| `test_default_metric_name` | ported | `tests/test_instrumentation.py::CustomMetricNameTest::test_custom_metric_name_is_used` |
+| `test_default_metric_name` | ported | `tests/test_instrumentation.py::DefaultInstrumentationTest::test_instrument_adds_default_metrics_when_none_are_added` |
 | `test_default_without_add` | ported | `tests/test_instrumentation.py::DefaultInstrumentationTest::test_instrument_adds_default_metrics_when_none_are_added` |
 | `test_custom_metric_name` | ported | `tests/test_instrumentation.py::CustomMetricNameTest::test_custom_metric_name_is_used` |
 | `test_grouped_status_codes` | ported | `tests/test_instrumentation.py::ExplicitInstrumentationTest::test_request_counter_observes_real_tornado_requests` |
@@ -57,9 +59,9 @@ Total upstream cases: 98.
 | `test_should_respect_env_var_existence_exists` | ported | `tests/test_instrumentation.py::EnvVarEnabledInstrumentationTest::test_instrument_and_expose_are_enabled_when_env_var_exists` |
 | `test_should_respect_env_var_existence_not_exists` | ported | `tests/test_instrumentation.py::EnvVarDisabledInstrumentationTest::test_instrument_and_expose_are_disabled_when_env_var_is_absent` and `EnvVarFalseInstrumentationTest` |
 | `test_entropy` | not-applicable | Upstream helper sanity check for rounding entropy; Tornado port directly asserts rounded `Info` durations. |
-| `test_default_no_rounding` | ported | `tests/test_instrumentation.py::RoundedLatencyTest::test_observation_info_durations_are_rounded` covers the rounding path; default non-rounding is covered by default duration tests. |
+| `test_default_no_rounding` | ported | `tests/test_instrumentation.py::DefaultLatencyPrecisionTest::test_default_observation_keeps_unrounded_duration` |
 | `test_rounding` | ported | `tests/test_instrumentation.py::RoundedLatencyTest::test_observation_info_durations_are_rounded` |
-| `test_custom_async_instrumentation` | ported | `tests/test_instrumentation.py::AsyncCustomInstrumentationTest::test_async_instrumentation_receives_observation_info` |
+| `test_custom_async_instrumentation` | ported | `tests/test_instrumentation.py::AsyncCustomInstrumentationTest::test_async_instrumentation_receives_observation_info`; Tornado schedules this post-completion work, so it is eventually rather than immediately scrape-visible. |
 | `test_add_sync_instrumentation_does_not_warn_deprecated_coroutine_check` | ported | `tests/test_instrumentation.py::CustomInstrumentationTest::test_sync_instrumentation_receives_observation_info` |
 
 ## `test_instrumentator_expose.py`
