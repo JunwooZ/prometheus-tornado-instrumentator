@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.1.0 - Unreleased
+## 0.1.1a1 - 2026-07-13
 
 ### Added
 
@@ -9,4 +9,3 @@
 - Custom sync and async instrumentation functions.
 - Metrics endpoint exposure for Tornado applications.
 - Handler exclusions, dynamic route instrumentation, custom registries, and multiprocess support.
-
