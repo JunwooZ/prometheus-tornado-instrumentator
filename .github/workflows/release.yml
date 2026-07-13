@@ -44,6 +44,37 @@ jobs:
             exit 1
           }
 
+      - name: Prepare release notes from Changelog
+        env:
+          RELEASE_VERSION: ${{ github.ref_name }}
+        run: |
+          version=${RELEASE_VERSION#v}
+          if ! awk -v version="$version" '
+            $0 ~ /^## / {
+              if (capture) exit
+              if ($2 == version) {
+                capture = 1
+                next
+              }
+            }
+            capture { print }
+            END { if (!capture) exit 1 }
+          ' CHANGELOG.md > release-notes.md; then
+            echo "CHANGELOG.md has no section for version $version"
+            exit 1
+          fi
+          if ! grep -q '[^[:space:]]' release-notes.md; then
+            echo "CHANGELOG.md section for version $version is empty"
+            exit 1
+          fi
+
+      - name: Upload release notes
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-notes
+          path: release-notes.md
+          if-no-files-found: error
+
   build:
     name: Build distributions
     needs: preflight
@@ -91,7 +122,16 @@ jobs:
           name: release-dists
           path: dist/
 
+      - name: Download release notes
+        uses: actions/download-artifact@v5
+        with:
+          name: release-notes
+
       - name: Create GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create "$GITHUB_REF_NAME" dist/* --generate-notes --verify-tag
+        run: >-
+          gh release create "$GITHUB_REF_NAME" dist/*
+          --title "$GITHUB_REF_NAME"
+          --notes-file release-notes.md
+          --verify-tag
