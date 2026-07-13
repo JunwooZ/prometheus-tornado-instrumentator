@@ -69,6 +69,7 @@ semantic-parity notes.
 - [Usage](docs/usage.md)
 - [API reference](docs/api.md)
 - [Development](docs/development.md)
+- [Release process](docs/release.md)
 - [Upstream parity](docs/parity.md)
 - [Documentation index](docs/README.md)
 
