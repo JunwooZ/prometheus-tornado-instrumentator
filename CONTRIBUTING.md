@@ -21,6 +21,9 @@ uv build
 uv run --extra dev python -m twine check dist/*
 ```
 
+See [docs/release.md](docs/release.md) for the full TestPyPI, PyPI Trusted
+Publishing, and GitHub Release workflow.
+
 ## Commit Messages
 
 Use Conventional Commits:

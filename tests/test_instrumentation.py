@@ -9,6 +9,22 @@ from tornado.web import Application, RequestHandler
 from prometheus_tornado_instrumentator import Instrumentator, metrics
 
 
+def test_untemplated_handler_policy_covers_all_modes():
+    assert (
+        Instrumentator(should_ignore_untemplated=True)._modified_handler("none")
+        is None
+    )
+    assert (
+        Instrumentator(should_group_untemplated=True)._modified_handler("none")
+        == "none"
+    )
+    assert (
+        Instrumentator(should_group_untemplated=False)._modified_handler("none")
+        == "none"
+    )
+    assert Instrumentator()._modified_handler("/known") == "/known"
+
+
 class HelloHandler(RequestHandler):
     def get(self):
         self.write("hello")
