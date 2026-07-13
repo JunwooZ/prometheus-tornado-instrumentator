@@ -22,7 +22,7 @@ The completion bar for this port is not "the code exists"; it is "the Tornado po
 
 Total upstream tests accounted for: 98. See [`docs/upstream-case-audit.md`](upstream-case-audit.md) for the per-case audit.
 
-Current local verification: `uv run --extra dev python -m pytest -q` passes with 105 tests.
+Current local verification: `uv run --extra dev python -m pytest -q` passes with 106 tests.
 
 ## Parity Rules
 

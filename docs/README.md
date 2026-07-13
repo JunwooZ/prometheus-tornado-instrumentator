@@ -9,6 +9,8 @@
 ## Maintainer Docs
 
 - [Development](development.md): `uv`, tests, coverage, and build checks.
+- [Release process](release.md): branch model, TestPyPI, PyPI Trusted
+  Publishing, and tag-driven GitHub Releases.
 - [Architecture](internals/architecture.md): Tornado handler-wrapper design.
 - [Upstream baseline](internals/porting/upstream-baseline.md): source version used for the initial port.
 
