@@ -103,8 +103,8 @@ After TestPyPI publishes, verify installation from TestPyPI:
 
 ```bash
 uv pip install \
-  --index-url https://test.pypi.org/simple/ \
-  --extra-index-url https://pypi.org/simple/ \
+  --index https://test.pypi.org/simple/ \
+  --default-index https://pypi.org/simple/ \
   prometheus-tornado-instrumentator==0.1.1a1
 ```
 
