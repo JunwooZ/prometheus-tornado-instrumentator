@@ -1,0 +1,76 @@
+name: Release Smoke Test
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build smoke distributions
+    uses: ./.github/workflows/verify.yml
+    with:
+      python-version: "3.13"
+      build-package: true
+      upload-artifact: true
+      artifact-name: smoke-distributions
+
+  release:
+    name: Verify GitHub Release creation
+    needs: build
+    runs-on: ubuntu-latest
+    env:
+      SMOKE_TAG: release-smoke-${{ github.run_id }}-${{ github.run_attempt }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Download distributions
+        uses: actions/download-artifact@v5
+        with:
+          name: smoke-distributions
+          path: dist
+
+      - name: Create temporary tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -a "$SMOKE_TAG" -m "Release smoke test"
+          git push origin "$SMOKE_TAG"
+
+      - name: Create draft GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$SMOKE_TAG" dist/* \
+            --repo "$GITHUB_REPOSITORY" \
+            --draft \
+            --generate-notes \
+            --verify-tag
+
+      - name: Verify draft GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view "$SMOKE_TAG" \
+            --repo "$GITHUB_REPOSITORY" \
+            --json isDraft,assets \
+            --jq '.isDraft and (.assets | length == 2)' | grep -qx true
+
+      - name: Clean up temporary Release and tag
+        if: ${{ always() }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view "$SMOKE_TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release delete "$SMOKE_TAG" \
+              --repo "$GITHUB_REPOSITORY" \
+              --yes \
+              --cleanup-tag
+          else
+            git push origin --delete "$SMOKE_TAG" || true
+          fi

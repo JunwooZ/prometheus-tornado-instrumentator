@@ -143,6 +143,17 @@ The `release.yml` workflow should:
 5. Publish to PyPI through Trusted Publishing.
 6. Create a GitHub Release for the tag.
 
+## Release Smoke Test
+
+When changing the GitHub Release automation, run **Release Smoke Test** manually
+from `main` before the next production tag. It reuses the normal build and
+package checks, creates a temporary `release-smoke-*` tag and draft GitHub
+Release with the built distributions, verifies the draft and its two assets,
+then removes both the draft and tag. It does not publish to TestPyPI or PyPI.
+
+This checks the full GitHub Release portion of the workflow, including the
+artifact download, tag verification, generated notes, upload, and permissions.
+
 ## Version Rules
 
 - TestPyPI tags use `test-v<version>`: `test-v0.1.1a1`.
