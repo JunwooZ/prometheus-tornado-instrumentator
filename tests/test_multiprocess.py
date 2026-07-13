@@ -145,6 +145,35 @@ class InProgressGaugeTest(AsyncHTTPTestCase):
         )
 
 
+class ExcludedHandlerLifecycleTest(AsyncHTTPTestCase):
+    def get_app(self):
+        self.registry = CollectorRegistry()
+        self.observed = []
+
+        def observe(info):
+            self.observed.append(info.modified_handler)
+
+        app = Application([(r"/sleep", SleepHandler)])
+        Instrumentator(
+            registry=self.registry,
+            excluded_handlers=[r"/sleep"],
+            body_handlers=[r"/sleep"],
+            should_instrument_requests_inprogress=True,
+            inprogress_labels=True,
+        ).add(observe).instrument(app).expose(app)
+        return app
+
+    @gen_test
+    async def test_excluded_handler_has_no_inprogress_or_observation_side_effects(self):
+        request = self.http_client.fetch(self.get_url("/sleep?seconds=0.2"))
+        await gen.sleep(0.05)
+        metrics_response = await self.http_client.fetch(self.get_url("/metrics"))
+        await request
+
+        assert 'handler="/sleep"' not in metrics_response.body.decode()
+        assert self.observed == ["/metrics"]
+
+
 class CustomInProgressGaugeNameTest(AsyncHTTPTestCase):
     def get_app(self):
         self.registry = CollectorRegistry()

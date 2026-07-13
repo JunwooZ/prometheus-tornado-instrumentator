@@ -1,6 +1,8 @@
 # Upstream Test Parity Matrix
 
-Source: `trallnag/prometheus-fastapi-instrumentator`, `master`, inspected from the upstream `tests/` directory.
+Source: `trallnag/prometheus-fastapi-instrumentator`, `v8.0.2` peeled commit
+`c1c1fb645ce3b28d538413a9ac18cc7559c0c385` (also the audited `master`),
+inspected from the upstream `tests/` directory.
 
 The completion bar for this port is not "the code exists"; it is "the Tornado port's full semantic-equivalent test suite passes." Every upstream test must be either ported to a Tornado-equivalent test or explicitly marked not applicable with a reason.
 
@@ -10,19 +12,19 @@ The completion bar for this port is not "the code exists"; it is "the Tornado po
 | --- | ---: | --- | --- |
 | `test_metrics.py` | 31 | Mostly direct port; replace Starlette request/response objects with Tornado-compatible `Observation Info` fixtures. | Covered by `tests/test_metrics.py` and runtime error cases in `tests/test_instrumentation.py`. |
 | `test_instrumentation.py` | 24 | Port to Tornado `Application`, handler wrapper, and Tornado test client. | Covered by `tests/test_instrumentation.py`; FastAPI validation-only semantics are not applicable. |
-| `test_middleware.py` | 7 | Port as handler-wrapper lifecycle/body-capture tests. | Covered by body-capture tests in `tests/test_instrumentation.py` and traceability checks in `tests/test_middleware.py`. |
+| `test_middleware.py` | 7 | Port as handler-wrapper lifecycle/body-capture tests. | Covered by body-capture tests in `tests/test_instrumentation.py`. |
 | `test_expose.py` | 3 | Port to Tornado `/metrics` handler behavior. | Covered by `tests/test_expose.py`; FastAPI/Starlette app type variants collapse to Tornado app expose. |
 | `test_instrumentator_expose.py` | 2 | Port expose defaults and custom endpoint. | Covered by `tests/test_expose.py`. |
 | `test_instrumentator_multiple_apps.py` | 3 | Port multiple Tornado applications and custom registries. | Covered by `tests/test_multiple_apps.py`. |
 | `test_instrumentator_multiproc.py` | 7 | Port Prometheus multiprocess behavior; may remain env-gated. | Covered by `tests/test_multiprocess.py`, including a child-process multiprocess smoke. |
-| `test_instrumentator_starlette.py` | 8 | Starlette-specific file; port generic behavior to Tornado path/method/status/exclusion/gzip tests. | Covered semantically by Tornado path/method/status/exclusion/custom-endpoint/gzip tests and traceability checks. |
-| `test_instrumentator_included_router.py` | 9 | FastAPI router-specific file; port handler representation and nested route semantics where Tornado has equivalents. | Tornado equivalents covered by behavior tests and traceability checks; FastAPI validation/router/mount/websocket-only cases marked not applicable below. |
+| `test_instrumentator_starlette.py` | 8 | Starlette-specific file; port generic behavior to Tornado path/method/status/exclusion/gzip tests. | Covered semantically by Tornado behavior tests. |
+| `test_instrumentator_included_router.py` | 9 | FastAPI router-specific file; port handler representation and nested route semantics where Tornado has equivalents. | Tornado equivalents covered by behavior tests; FastAPI validation/router/mount/websocket-only cases marked not applicable below. |
 | `test_instrumentator_mounted_apps.py` | 2 | FastAPI mounted-app-specific file; port only if Tornado sub-application routing is supported, otherwise mark not applicable. | Not applicable for first version; no nested ASGI mounted app support is promised. |
 | `test_markers.py` | 2 | Pytest marker sanity tests. | Covered by `tests/test_markers.py`. |
 
 Total upstream tests accounted for: 98. See [`docs/upstream-case-audit.md`](upstream-case-audit.md) for the per-case audit.
 
-Current local verification: `uv run --extra dev python -m pytest -q` passes with 106 tests.
+Current local verification command: `uv run --extra dev python -m pytest -q`.
 
 ## Parity Rules
 
@@ -101,9 +103,9 @@ Tests:
 - `test_should_respect_env_var_existence_exists` -> env-var gating.
 - `test_should_respect_env_var_existence_not_exists` -> env-var gating.
 - `test_entropy` -> not applicable; it is a helper sanity check for the upstream rounding heuristic, while the Tornado port directly asserts rounded `Info` durations.
-- `test_default_no_rounding` -> latency rounding disabled.
+- `test_default_no_rounding` -> `DefaultLatencyPrecisionTest` keeps a fixed duration unrounded.
 - `test_rounding` -> latency rounding enabled.
-- `test_custom_async_instrumentation` -> async instrumentation callback.
+- `test_custom_async_instrumentation` -> eventually executed async instrumentation callback.
 - `test_add_sync_instrumentation_does_not_warn_deprecated_coroutine_check` -> sync callback path.
 
 ### `test_middleware.py`

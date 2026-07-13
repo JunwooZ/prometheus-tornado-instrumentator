@@ -30,9 +30,15 @@ class Info:
 class Response:
     """Response data exposed to instrumentation functions."""
 
-    def __init__(self, headers: Any, body: bytes = b"") -> None:
+    def __init__(
+        self,
+        headers: Any,
+        body: bytes = b"",
+        body_size: Optional[int] = None,
+    ) -> None:
         self.headers = headers
         self.body = body
+        self.body_size = body_size
 
 
 def _build_label_attribute_names(
@@ -108,7 +114,10 @@ def _inc(metric: Any, label_values: List[str]) -> None:
 def _content_length(carrier: Any) -> int:
     if carrier is None or not hasattr(carrier, "headers"):
         return 0
-    return int(carrier.headers.get("Content-Length", 0))
+    content_length = carrier.headers.get("Content-Length")
+    if content_length is not None:
+        return int(content_length)
+    return getattr(carrier, "body_size", 0) or 0
 
 
 def _make_counter(
