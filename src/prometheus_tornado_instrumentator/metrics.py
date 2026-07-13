@@ -120,6 +120,32 @@ def _content_length(carrier: Any) -> int:
     return getattr(carrier, "body_size", 0) or 0
 
 
+def _make_metric(
+    metric_type: Any,
+    metric_name: str,
+    metric_doc: str,
+    label_names: List[str],
+    metric_namespace: str,
+    metric_subsystem: str,
+    registry: CollectorRegistry,
+    **kwargs: Any,
+) -> Optional[Any]:
+    try:
+        return metric_type(
+            name=metric_name,
+            documentation=metric_doc,
+            namespace=metric_namespace,
+            subsystem=metric_subsystem,
+            labelnames=label_names,
+            registry=registry,
+            **kwargs,
+        )
+    except ValueError as error:
+        if not _is_duplicated_time_series(error):
+            raise
+        return None
+
+
 def _make_counter(
     metric_name: str,
     metric_doc: str,
@@ -128,19 +154,10 @@ def _make_counter(
     metric_subsystem: str,
     registry: CollectorRegistry,
 ) -> Optional[Counter]:
-    try:
-        return Counter(
-            name=metric_name,
-            documentation=metric_doc,
-            namespace=metric_namespace,
-            subsystem=metric_subsystem,
-            labelnames=label_names,
-            registry=registry,
-        )
-    except ValueError as error:
-        if not _is_duplicated_time_series(error):
-            raise
-        return None
+    return _make_metric(
+        Counter, metric_name, metric_doc, label_names, metric_namespace,
+        metric_subsystem, registry
+    )
 
 
 def _make_histogram(
@@ -152,20 +169,10 @@ def _make_histogram(
     registry: CollectorRegistry,
     buckets: Sequence[Union[float, str]],
 ) -> Optional[Histogram]:
-    try:
-        return Histogram(
-            name=metric_name,
-            documentation=metric_doc,
-            namespace=metric_namespace,
-            subsystem=metric_subsystem,
-            labelnames=label_names,
-            buckets=buckets,
-            registry=registry,
-        )
-    except ValueError as error:
-        if not _is_duplicated_time_series(error):
-            raise
-        return None
+    return _make_metric(
+        Histogram, metric_name, metric_doc, label_names, metric_namespace,
+        metric_subsystem, registry, buckets=buckets
+    )
 
 
 def _make_summary(
@@ -176,19 +183,10 @@ def _make_summary(
     metric_subsystem: str,
     registry: CollectorRegistry,
 ) -> Optional[Summary]:
-    try:
-        return Summary(
-            name=metric_name,
-            documentation=metric_doc,
-            namespace=metric_namespace,
-            subsystem=metric_subsystem,
-            labelnames=label_names,
-            registry=registry,
-        )
-    except ValueError as error:
-        if not _is_duplicated_time_series(error):
-            raise
-        return None
+    return _make_metric(
+        Summary, metric_name, metric_doc, label_names, metric_namespace,
+        metric_subsystem, registry
+    )
 
 
 def request_size(
