@@ -42,6 +42,9 @@ jobs:
           git tag -a "$SMOKE_TAG" -m "Release smoke test"
           git push origin "$SMOKE_TAG"
 
+      - name: Prepare smoke release notes
+        run: printf '%s\n' 'Release workflow smoke test.' > release-notes.md
+
       - name: Create draft GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
@@ -49,7 +52,7 @@ jobs:
           gh release create "$SMOKE_TAG" dist/* \
             --repo "$GITHUB_REPOSITORY" \
             --draft \
-            --generate-notes \
+            --notes-file release-notes.md \
             --verify-tag
 
       - name: Verify draft GitHub Release
@@ -58,8 +61,8 @@ jobs:
         run: |
           gh release view "$SMOKE_TAG" \
             --repo "$GITHUB_REPOSITORY" \
-            --json isDraft,assets \
-            --jq '.isDraft and (.assets | length == 2)' | grep -qx true
+            --json isDraft,assets,body \
+            --jq '.isDraft and (.assets | length == 2) and (.body | contains("Release workflow smoke test."))' | grep -qx true
 
       - name: Clean up temporary Release and tag
         if: ${{ always() }}

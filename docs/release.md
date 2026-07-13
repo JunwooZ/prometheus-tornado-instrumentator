@@ -123,6 +123,12 @@ git commit -m "chore: prepare 0.1.1 release"
 git push origin release/0.1.1
 ```
 
+Record user-visible features, fixes, compatibility changes, and performance
+changes under `## Unreleased` while developing. Test-only changes, refactors,
+documentation maintenance, and CI changes normally do not belong there. During
+release preparation, rename `Unreleased` to `<version> - <YYYY-MM-DD>` and add a
+new empty `## Unreleased` section above it.
+
 Open a pull request, wait for CI, and merge it into `main`.
 
 Tag the merged `main` commit:
@@ -136,12 +142,13 @@ git push origin v0.1.1
 
 The `release.yml` workflow should:
 
-1. Confirm the tag version matches `pyproject.toml` and the tag commit is on `main`.
+1. Confirm the tag version matches `pyproject.toml`, the tag commit is on `main`,
+   and the matching Changelog section exists and is not empty.
 2. Run tests.
 3. Build the package with `uv build`.
 4. Check the built files with `twine check dist/*`.
 5. Publish to PyPI through Trusted Publishing.
-6. Create a GitHub Release for the tag.
+6. Create a GitHub Release whose body is the matching Changelog section.
 
 ## Release Smoke Test
 
@@ -152,7 +159,8 @@ Release with the built distributions, verifies the draft and its two assets,
 then removes both the draft and tag. It does not publish to TestPyPI or PyPI.
 
 This checks the full GitHub Release portion of the workflow, including the
-artifact download, tag verification, generated notes, upload, and permissions.
+artifact download, tag verification, curated notes file, upload, and
+permissions.
 
 ## Version Rules
 
