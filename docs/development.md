@@ -35,10 +35,12 @@ uv build
 uv run --extra dev python -m twine check dist/*
 ```
 
+See [Release Process](release.md) for the full TestPyPI and PyPI publishing
+workflow.
+
 ## Documentation Rules
 
 - User-facing behavior belongs in `README.md`, `docs/usage.md`, and `docs/api.md`.
 - Contributor workflow belongs in this file.
 - Upstream migration evidence belongs under `docs/internals/porting/`.
 - When upstream parity changes, update `docs/parity.md` and the relevant internal porting notes together.
-

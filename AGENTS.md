@@ -36,3 +36,13 @@ Use Conventional Commits for this repository:
 Use an English imperative summary. Omit `scope` when it does not add clarity.
 Common types are `feat`, `fix`, `docs`, `test`, `refactor`, `chore`, `ci`,
 `perf`, `style`, and `build`.
+
+## Release workflow
+
+For release preparation, TestPyPI publishing, PyPI publishing, GitHub Releases,
+or tag-driven release automation, follow `docs/release.md`.
+
+Do not publish from ordinary branch pushes. Normal code changes should enter
+`main` through pull requests, and package publishing should be driven by release
+tags after CI passes. Use PyPI Trusted Publishing rather than GitHub-stored PyPI
+tokens.
