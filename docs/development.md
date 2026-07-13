@@ -28,6 +28,11 @@ uv run --extra dev python -m pytest \
 
 ## Package Build
 
+Pull request CI always builds and checks the package. Run these commands locally
+only when changing package configuration, metadata, README rendering,
+`MANIFEST.in`, package data, or source layout, or when diagnosing a packaging
+failure. Local build artifacts are never used for a production release.
+
 ```bash
 uv build
 uv run --extra dev python -m twine check dist/*
