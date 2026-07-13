@@ -25,6 +25,9 @@ Use `uv` for Python-related commands in this repository. Run tests and Python
 entry points through `uv run`, and manage Python dependencies with `uv` rather
 than direct `python`, `pip`, or bare `pytest` commands.
 
+For local verification scope, follow `docs/development.md`. Package builds are
+conditional and are not required for ordinary code or documentation changes.
+
 ## Git commit format
 
 Use Conventional Commits for this repository:
@@ -41,6 +44,9 @@ Common types are `feat`, `fix`, `docs`, `test`, `refactor`, `chore`, `ci`,
 
 For release preparation, TestPyPI publishing, PyPI publishing, GitHub Releases,
 or tag-driven release automation, follow `docs/release.md`.
+
+Before creating a production tag, complete the Pre-Tag Checklist in
+`docs/release.md`.
 
 Do not publish from ordinary branch pushes. Normal code changes should enter
 `main` through pull requests, and package publishing should be driven by release
