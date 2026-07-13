@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+## 0.1.2 - 2026-07-13
+
+### Changed
+
+- Establish the first fully verified production release, with curated GitHub
+  Release notes and attached wheel and source distributions. Package behavior
+  is unchanged from 0.1.1.
+
 ## 0.1.1 - 2026-07-13
 
 ### Added
