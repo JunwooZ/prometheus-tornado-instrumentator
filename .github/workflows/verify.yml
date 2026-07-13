@@ -1,0 +1,64 @@
+name: Verify
+
+on:
+  workflow_call:
+    inputs:
+      python-version:
+        required: true
+        type: string
+      run-coverage:
+        default: false
+        type: boolean
+      build-package:
+        default: false
+        type: boolean
+      upload-artifact:
+        default: false
+        type: boolean
+      artifact-name:
+        default: distributions
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up uv and Python
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          python-version: ${{ inputs.python-version }}
+
+      - name: Run tests
+        if: ${{ !inputs.run-coverage }}
+        run: uv run --extra dev python -m pytest -q
+
+      - name: Check coverage
+        if: ${{ inputs.run-coverage }}
+        run: >-
+          uv run --extra dev python -m pytest
+          --cov=prometheus_tornado_instrumentator
+          --cov-report=term-missing
+          --cov-fail-under=98
+
+      - name: Build distributions
+        if: ${{ inputs.build-package }}
+        run: uv build
+
+      - name: Check distributions
+        if: ${{ inputs.build-package }}
+        run: uv run --extra dev python -m twine check dist/*
+
+      - name: Upload distributions
+        if: ${{ inputs.upload-artifact }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.artifact-name }}
+          path: dist/
+          if-no-files-found: error

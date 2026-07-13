@@ -5,7 +5,9 @@ Twine package checks, PyPI Trusted Publishing, and GitHub Releases.
 
 The release flow is tag-driven. Normal code changes should enter `main` through
 pull requests; publishing starts only when a release tag is pushed. TestPyPI
-uses `test-v<version>` tags, while production PyPI uses `v<version>` tags.
+uses `test-v<version>` tags, while production PyPI uses `v<version>` tags. Both
+publishing workflows reject tags whose commit is not already an ancestor of
+`main`.
 
 ## Branch Model
 
@@ -134,7 +136,7 @@ git push origin v0.1.1
 
 The `release.yml` workflow should:
 
-1. Confirm the tag version matches `pyproject.toml`.
+1. Confirm the tag version matches `pyproject.toml` and the tag commit is on `main`.
 2. Run tests.
 3. Build the package with `uv build`.
 4. Check the built files with `twine check dist/*`.
@@ -147,9 +149,10 @@ The `release.yml` workflow should:
 - Production tags use `v<version>`: `v0.1.1`.
 - `pyproject.toml` versions do not use the leading `v`: `0.1.1`.
 - The TestPyPI workflow must fail if `test-v${project.version}` does not match
-  the pushed tag.
+  the pushed tag or its commit is not on `main`.
 - The production workflow must fail if `v${project.version}` does not match the
-  pushed tag or if the project version is a pre-release.
+  pushed tag, its commit is not on `main`, or if the project version is a
+  pre-release.
 - Never reuse a version number on PyPI or TestPyPI.
 
 ## When To Use TestPyPI

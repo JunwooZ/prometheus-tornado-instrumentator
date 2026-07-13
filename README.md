@@ -82,8 +82,6 @@ uv sync --extra dev
 uv run --extra dev python -m pytest -q
 ```
 
-The current verified baseline is 105 passing tests.
-
 ## License
 
 This project is licensed under the ISC License. See [LICENSE](LICENSE).
