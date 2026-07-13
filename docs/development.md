@@ -14,8 +14,6 @@ uv sync --extra dev
 uv run --extra dev python -m pytest -q
 ```
 
-The current verified baseline is 105 passing tests.
-
 ## Coverage
 
 Line coverage is a guardrail, not the main completion signal. Keep source line

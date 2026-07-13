@@ -272,7 +272,7 @@ Done when:
 
 ## Current Verification
 
-`uv run --extra dev python -m pytest -q` passes with 106 tests.
+Run `uv run --extra dev python -m pytest -q` for the current suite result.
 
 Source line coverage for `src/prometheus_tornado_instrumentator` should stay at
 or above 98%. The project does not require mechanical 100% line coverage; the
