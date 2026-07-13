@@ -4,7 +4,8 @@ This repository releases Python packages through GitHub Actions, `uv` builds,
 Twine package checks, PyPI Trusted Publishing, and GitHub Releases.
 
 The release flow is tag-driven. Normal code changes should enter `main` through
-pull requests; publishing starts only when a release tag is pushed.
+pull requests; publishing starts only when a release tag is pushed. TestPyPI
+uses `test-v<version>` tags, while production PyPI uses `v<version>` tags.
 
 ## Branch Model
 
@@ -94,8 +95,8 @@ commit:
 ```bash
 git checkout main
 git pull origin main
-git tag v0.1.1a1
-git push origin v0.1.1a1
+git tag test-v0.1.1a1
+git push origin test-v0.1.1a1
 ```
 
 After TestPyPI publishes, verify installation from TestPyPI:
@@ -103,6 +104,7 @@ After TestPyPI publishes, verify installation from TestPyPI:
 ```bash
 uv pip install \
   --index-url https://test.pypi.org/simple/ \
+  --extra-index-url https://pypi.org/simple/ \
   prometheus-tornado-instrumentator==0.1.1a1
 ```
 
@@ -141,10 +143,13 @@ The `release.yml` workflow should:
 
 ## Version Rules
 
-- Git tags use a leading `v`: `v0.1.1`.
+- TestPyPI tags use `test-v<version>`: `test-v0.1.1a1`.
+- Production tags use `v<version>`: `v0.1.1`.
 - `pyproject.toml` versions do not use the leading `v`: `0.1.1`.
-- The release workflow must fail if `v${project.version}` does not match the
-  pushed tag.
+- The TestPyPI workflow must fail if `test-v${project.version}` does not match
+  the pushed tag.
+- The production workflow must fail if `v${project.version}` does not match the
+  pushed tag or if the project version is a pre-release.
 - Never reuse a version number on PyPI or TestPyPI.
 
 ## When To Use TestPyPI
