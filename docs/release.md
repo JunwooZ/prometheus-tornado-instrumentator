@@ -25,8 +25,8 @@ Protect `main` in GitHub before relying on automated publishing:
 
 ## Continuous Integration
 
-Pull requests and pushes to `main` should run the same checks maintainers run
-locally:
+Pull requests and pushes to `main` run the full test matrix, coverage, and
+package checks:
 
 ```bash
 uv sync --extra dev
@@ -41,6 +41,12 @@ uv run --extra dev python -m twine check dist/*
 `uv build` creates the source distribution and wheel under `dist/`.
 `twine check` validates the built distributions, including package metadata and
 README rendering as PyPI will see them.
+
+For ordinary changes, run the relevant tests locally and let pull request CI
+perform the full matrix and package build. Run `uv build` and `twine check`
+locally only when changing package configuration, metadata, README rendering,
+`MANIFEST.in`, package data, or source layout, or when diagnosing a packaging
+failure. Local build artifacts are never used for a production release.
 
 ## Trusted Publishing Setup
 
@@ -76,51 +82,60 @@ release workflow, package metadata, or build configuration changes.
 Use a unique pre-release version. Package indexes do not allow uploading the
 same version twice.
 
-Examples:
-
-- `0.1.1a1`
-- `0.1.1rc1`
-- `0.1.1.dev20260709`
-
 Recommended sequence:
 
 ```bash
-git checkout -b release/0.1.1a1
+VERSION=1.2.3rc1
+git checkout -b "release/$VERSION"
 # Update pyproject.toml and CHANGELOG.md.
-git commit -m "chore: prepare 0.1.1a1 release"
-git push origin release/0.1.1a1
+git commit -m "chore: prepare $VERSION release"
+git push origin "release/$VERSION"
 ```
 
 Open a pull request, wait for CI, and merge it. Then tag the merged `main`
 commit:
 
 ```bash
+VERSION=1.2.3rc1
 git checkout main
 git pull origin main
-git tag test-v0.1.1a1
-git push origin test-v0.1.1a1
+git tag "test-v$VERSION"
+git push origin "test-v$VERSION"
 ```
 
 After TestPyPI publishes, verify installation from TestPyPI:
 
 ```bash
+VERSION=1.2.3rc1
 uv pip install \
   --index https://test.pypi.org/simple/ \
   --default-index https://pypi.org/simple/ \
-  prometheus-tornado-instrumentator==0.1.1a1
+  "prometheus-tornado-instrumentator==$VERSION"
 ```
 
 Then verify a basic import and usage path in a clean environment.
+
+## Pre-Release Checklist
+
+- [ ] The release pull request is merged into `main`, and all CI jobs passed.
+- [ ] The local working tree is clean and `main` matches `origin/main`.
+- [ ] `pyproject.toml` and the non-empty Changelog section use the same version.
+- [ ] The version does not already exist on PyPI or as a local or remote tag.
+- [ ] User-visible behavior changes are reflected in the relevant documentation.
+- [ ] TestPyPI or Release Smoke Test passed when the changed scope requires it.
+- [ ] GitHub Actions shows no new deprecation or compatibility warnings.
+- [ ] The `pypi` Environment will use normal approval without bypassing its rules.
 
 ## Production Release
 
 Prepare the final version on a `release/*` branch:
 
 ```bash
-git checkout -b release/0.1.1
+VERSION=1.2.3
+git checkout -b "release/$VERSION"
 # Update pyproject.toml and CHANGELOG.md.
-git commit -m "chore: prepare 0.1.1 release"
-git push origin release/0.1.1
+git commit -m "chore: prepare $VERSION release"
+git push origin "release/$VERSION"
 ```
 
 Record user-visible features, fixes, compatibility changes, and performance
@@ -134,10 +149,11 @@ Open a pull request, wait for CI, and merge it into `main`.
 Tag the merged `main` commit:
 
 ```bash
+VERSION=1.2.3
 git checkout main
 git pull origin main
-git tag v0.1.1
-git push origin v0.1.1
+git tag "v$VERSION"
+git push origin "v$VERSION"
 ```
 
 The `release.yml` workflow should:
@@ -180,9 +196,9 @@ permissions.
 
 ## Version Rules
 
-- TestPyPI tags use `test-v<version>`: `test-v0.1.1a1`.
-- Production tags use `v<version>`: `v0.1.1`.
-- `pyproject.toml` versions do not use the leading `v`: `0.1.1`.
+- TestPyPI tags use `test-v<version>`: `test-v1.2.3rc1`.
+- Production tags use `v<version>`: `v1.2.3`.
+- `pyproject.toml` versions do not use the leading `v`: `1.2.3`.
 - The TestPyPI workflow must fail if `test-v${project.version}` does not match
   the pushed tag or its commit is not on `main`.
 - The production workflow must fail if `v${project.version}` does not match the
