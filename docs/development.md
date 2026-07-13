@@ -42,3 +42,5 @@ workflow.
 - Contributor workflow belongs in this file.
 - Upstream migration evidence belongs under `docs/internals/porting/`.
 - When upstream parity changes, update `docs/parity.md` and the relevant internal porting notes together.
+- Do not hardcode the current test count in long-lived documentation. Historical
+  baselines may keep a count when it is clearly labeled as a dated snapshot.
