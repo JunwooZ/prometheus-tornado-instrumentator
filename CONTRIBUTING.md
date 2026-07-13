@@ -2,27 +2,12 @@
 
 Thanks for taking the time to improve this project.
 
-## Development Setup
+## Development and Release
 
-```bash
-uv sync --extra dev
-```
-
-## Test
-
-```bash
-uv run --extra dev python -m pytest -q
-```
-
-## Build Check
-
-```bash
-uv build
-uv run --extra dev python -m twine check dist/*
-```
-
-See [docs/release.md](docs/release.md) for the full TestPyPI, PyPI Trusted
-Publishing, and GitHub Release workflow.
+Follow the [development guide](docs/development.md) for environment setup,
+tests, coverage, and conditional package-build checks. Follow the
+[release process](docs/release.md) for TestPyPI, PyPI Trusted Publishing, and
+GitHub Releases.
 
 ## Commit Messages
 
